@@ -44,41 +44,41 @@ class linear_regression():
         # perform unbiased estimation
         self.variable.remove(self.dep_var)
 
-        # df_vif = get_vif(self.variable, self.training)
-        #
-        # while np.max(df_vif["VIF"]) >= 10 or len(np.isinf(df_vif["VIF"])[np.isinf(df_vif["VIF"]) == True])>0:
-        #     for var, vf in zip(df_vif.index.values, df_vif["VIF"]):
-        #         if vf==np.max(df_vif["VIF"]):
-        #             self.variable.remove(var)
-        #
-        #     df_vif = get_vif(self.variable, self.training)
+        df_vif = get_vif(self.variable, self.training)
+        
+        while np.max(df_vif["VIF"]) >= 10 or len(np.isinf(df_vif["VIF"])[np.isinf(df_vif["VIF"]) == True])>0:
+            for var, vf in zip(df_vif.index.values, df_vif["VIF"]):
+                if vf==np.max(df_vif["VIF"]):
+                    self.variable.remove(var)
+        
+            df_vif = get_vif(self.variable, self.training)
 
 
         linear_model = sm.OLS(self.training[self.dep_var], self.training[self.variable])
         final_model = linear_model.fit()
 
 
-        # while len(np.isnan(final_model.pvalues)[np.isnan(final_model.pvalues) == True]) > 0:
-        #
-        #     for i in final_model.pvalues.index.get_values():
-        #         if np.isnan(final_model.pvalues[i]):
-        #
-        #             self.variable.remove(i)
-        #
-        #             trainX = self.trainingX[self.variable]
-        #             linear_model = sm.OLS(self.trainingY, trainX)
-        #             final_model = linear_model.fit()
-        #
-        #
-        #     if np.max(final_model.pvalues) > 0.1:
-        #         rem_var = final_model.pvalues[final_model.pvalues ==
-        #                                       np.max(final_model.pvalues)].index.get_values()
-        #
-        #         self.variable.remove(rem_var)
-        #
-        #         trainX = self.trainingX[self.variable]
-        #         linear_model = sm.OLS(self.trainingY, trainX)
-        #         final_model = linear_model.fit()
+        while len(np.isnan(final_model.pvalues)[np.isnan(final_model.pvalues) == True]) > 0:
+        
+            for i in final_model.pvalues.index.get_values():
+                if np.isnan(final_model.pvalues[i]):
+        
+                    self.variable.remove(i)
+        
+                    trainX = self.trainingX[self.variable]
+                    linear_model = sm.OLS(self.trainingY, trainX)
+                    final_model = linear_model.fit()
+        
+        
+            if np.max(final_model.pvalues) > 0.1:
+                rem_var = final_model.pvalues[final_model.pvalues ==
+                                              np.max(final_model.pvalues)].index.get_values()
+        
+                self.variable.remove(rem_var)
+        
+                trainX = self.trainingX[self.variable]
+                linear_model = sm.OLS(self.trainingY, trainX)
+                final_model = linear_model.fit()
 
 
         return final_model, self.variable
